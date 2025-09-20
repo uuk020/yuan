@@ -10,9 +10,19 @@ typedef enum {
 
   ASSIGN,
   PLUS,
+  MINUS,
+  BANG,
+  ASTERISK,
+  SLASH,
 
-  COMMA,
+  LT,
+  GT,
+
+  EQ,
+  NOT_EQ,
+
   SEMICOLON,
+  COMMA,
 
   LPAREN,
   RPAREN,
@@ -21,6 +31,11 @@ typedef enum {
 
   FUNCTION,
   LET,
+  TRUE,
+  FALSE,
+  IF,
+  ELSE,
+  RETURN,
 
 } TokenKeywords;
 
@@ -33,5 +48,7 @@ typedef struct {
   TokenType type;
   char *Literal;
 } Token;
+
+TokenType lookupIdent(char *ident);
 
 #endif
