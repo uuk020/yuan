@@ -8,9 +8,9 @@ void readChar(Lexer *lexer) {
     lexer->ch = '\0';
   } else {
     lexer->ch = lexer->input[lexer->readPosition];
+    lexer->position = lexer->readPosition;
+    lexer->readPosition += 1;
   }
-  lexer->position = lexer->readPosition;
-  lexer->readPosition += 1;
 }
 
 char peekChar(Lexer *lexer) {
@@ -25,12 +25,14 @@ char peekChar(Lexer *lexer) {
 Lexer *NewLexer(char *input) {
   Lexer *lexer = (Lexer *)malloc(sizeof(Lexer));
   if (lexer == NULL) {
-    return NULL;
+    fprintf(stderr, "Failed to allocate `lexer` memory\n");
+    exit(1);
   }
   lexer->input = (char *)malloc(strlen(input) + 1);
   if (lexer->input == NULL) {
     free(lexer);
-    return NULL;
+    fprintf(stderr, "Failed to allocate `input` memory\n");
+    exit(1);
   }
   strcpy(lexer->input, input);
   lexer->position = 0;
@@ -50,8 +52,9 @@ Token *newToken(TokenType type, char ch) {
   tok->type = type;
   char *str = (char *)malloc(2 * sizeof(char));
   if (str == NULL) {
+    fprintf(stderr, "Failed to alllocate `str` memory\n");
     free(tok);
-    return NULL; // out of memory
+    exit(1);
   }
   str[0] = ch;
   str[1] = '\0';
@@ -64,11 +67,24 @@ Token *newToken(TokenType type, char ch) {
 Token *newTokenStr(TokenType type, char *str) {
   Token *tok = (Token *)malloc(sizeof(Token));
   if (tok == NULL) {
-    return NULL;
+    fprintf(stderr, "Failed to allocate `tok` memory\n");
+    exit(1);
   }
   tok->type = type;
   tok->Literal = str;
   return tok;
+}
+
+Token* makeTwoCharToken(Lexer *lexer, TokenType type, char first) {
+    char *literal = (char*)malloc(3);
+    if (literal == NULL) {
+      fprintf(stderr, "Failed to allocate `literal` memory\n");
+      exit(1);
+    }
+    literal[0] = first;
+    literal[1] = lexer->ch;
+    literal[2] = '\0';
+    return newTokenStr(type, literal);
 }
 
 void skipWhitespace(Lexer *lexer) {
@@ -88,14 +104,12 @@ Token *NextToken(Lexer *lexer) {
       readChar(lexer);
       char *literal = (char *)malloc(3 * sizeof(char));
       if (literal == NULL) {
-        return NULL;
+        fprintf(stderr, "Failed to allocate `literal` memory\n");
+        exit(1);
       }
-      literal[0] = ch;
-      literal[1] = lexer->ch;
-      literal[2] = '\0';
       type.index = EQ;
       type.value = "EQ";
-      tok = newTokenStr(type, literal);
+      tok = makeTwoCharToken(lexer, type, ch);
     } else {
       type.index = ASSIGN;
       type.value = "ASSIGN";
@@ -118,14 +132,12 @@ Token *NextToken(Lexer *lexer) {
       readChar(lexer);
       char *literal = (char *)malloc(3 * sizeof(char));
       if (literal == NULL) {
-        return NULL;
+        fprintf(stderr, "Failed to allocate `literal` memory\n");
+        exit(1);
       }
-      literal[0] = ch;
-      literal[1] = lexer->ch;
-      literal[2] = '\0';
       type.index = NOT_EQ;
       type.value = "NOT_EQ";
-      tok = newTokenStr(type, literal);
+      tok = makeTwoCharToken(lexer, type, ch);
     } else {
       type.index = BANG;
       type.value = "BANG";
@@ -188,15 +200,32 @@ Token *NextToken(Lexer *lexer) {
     tok = newToken(type, lexer->ch);
     break;
   default:
-    if (isalpha(lexer->ch)) {
+    if (isIdentStart(lexer->ch)) {
       char *str = readIdentifier(lexer);
+      if (str == NULL) {
+        type.index = ILLEGAL;
+        type.value = "ILLEGAL";
+        tok = newToken(type, lexer->ch);
+        return tok;
+      }
       type = lookupIdent(str);
       tok = newTokenStr(type, str);
       return tok; 
     } else if (isdigit(lexer->ch)) {
       char *str = readNumber(lexer);
-      type.index = INT;
-      type.value = "INT";
+      if (str == NULL) {
+        type.index = ILLEGAL;
+        type.value = "ILLEGAL";
+        tok = newToken(type, lexer->ch);
+        return tok;
+      }
+      if (strchr(str, '.') != NULL) {
+        type.index = FLOAT;
+        type.value = "FLOAT";
+      } else {
+        type.index = INT;
+        type.value = "INT";
+      }
       tok = newTokenStr(type, str);
       return tok;
     } else {
@@ -210,25 +239,33 @@ Token *NextToken(Lexer *lexer) {
   return tok;
 }
 
+int isIdentStart(char c) {
+  return isalpha(c) || c == '_';
+}
+
+int isIdentChar(char c) {
+  return isalnum((unsigned char)c) || c == '_';
+}
+
 // Don't forget free
 char *readIdentifier(Lexer *lexer) {
+  if (!isIdentStart(lexer->ch)) {
+    return NULL;
+  }
+
   int position = lexer->position;
-  while (isalpha(lexer->ch)) {
+  while (isIdentChar(lexer->ch)) {
     readChar(lexer);
   }
-  
+
   int length = lexer->position - position;
+
   char *str = (char *)malloc(length + 1);
-  if (str == NULL) {
-      return NULL;
-  }
-  
-  int i;
-  for (i = 0; i < length; i++) {
-    str[i] = lexer->input[position + i];
-  }
+  if (!str) return NULL;
+
+  memcpy(str, lexer->input + position, length);
   str[length] = '\0';
-  return str; 
+  return str;
 }
 
 // Don't forget free
@@ -237,17 +274,24 @@ char *readNumber(Lexer *lexer) {
   while (isdigit(lexer->ch)) {
     readChar(lexer);
   }
-  
-  int length = lexer->position - position;
-  char *str = (char *)malloc(length + 1);
-  if (str == NULL) {
-      return NULL;
+
+  if (lexer->ch == '.') {
+    readChar(lexer);
+    while (isdigit(lexer->ch)) {
+      readChar(lexer);
+    }
   }
   
-  int i;
-  for (i = 0; i < length; i++) {
-    str[i] = lexer->input[position + i];
+  int len = lexer->position - position;
+
+  char *num = (char *)malloc(len + 1);
+  if (num == NULL) {
+    fprintf(stderr, "Failed to allocate `num` memory\n");
+    exit(1);
   }
-  str[length] = '\0';
-  return str; 
+
+  strncpy(num, lexer->input + position, len);
+  num[len] = '\0';
+  return num;
+  
 }

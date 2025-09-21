@@ -7,6 +7,7 @@ typedef enum {
 
   IDENT,
   INT,
+  FLOAT,
 
   ASSIGN,
   PLUS,

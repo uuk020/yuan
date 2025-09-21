@@ -19,11 +19,20 @@ Lexer *NewLexer(char *input);
 
 Token *newToken(TokenType type, char ch);
 
+Token *newTokenStr(TokenType type, char *str);
+
+Token *makeTwoCharToken(Lexer *lexer, TokenType type, char first);
+
+void skipWhitespace(Lexer *lexer);
+
 Token *NextToken(Lexer *lexer);
+
+int isIdentStart(char c);
+
+int isIdentChar(char c);
 
 char *readIdentifier(Lexer *lexer);
 
-void skipWhitespace(Lexer *lexer);
 
 char *readNumber(Lexer *lexer);
 
