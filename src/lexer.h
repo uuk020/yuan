@@ -1,6 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <string.h>
 #include "token.h"
 
 typedef struct {

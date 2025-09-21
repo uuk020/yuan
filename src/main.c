@@ -1,29 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "lexer.h"
+#include <sys/types.h>
+#include <pwd.h>
+#include <unistd.h>
+#include "repl.h"
 
-
-char *input = "let five = 5; "\
-"let ten = 10; "\
-"let add = fn(x, y) {"\
-"  x + y; "\
-"};"\
-"let result = add(five, ten); "\
-"!-/*5; "\
-"5 < 10 > 5; "\
-" if (5 < 10) { "\
-"  return true; "\
-"} else {      "\
-"  return false;"\
-" }             "\
-" 10 == 10; "\
-" 10 != 9;";
-
-int main() {
+int test() {
   typedef struct {
     char *type;
     char *literal;
   } TestToken;
+
+  char *input = "let five = 5; "\
+    "let ten = 10; "\
+    "let add = fn(x, y) {"\
+    "  x + y; "\
+    "};"\
+    "let result = add(five, ten); "\
+    "!-/*5; "\
+    "5 < 10 > 5; "\
+    " if (5 < 10) { "\
+    "  return true; "\
+    "} else {      "\
+    "  return false;"\
+    " }             "\
+    " 10 == 10; "\
+    " 10 != 9;";
 
   TestToken tokens[] = {
     {"LET", "let"},
@@ -114,5 +116,19 @@ int main() {
   }
   free(lexer);
   lexer = NULL;
+  return 0;
+}
+
+int main() {
+  struct passwd *pw = getpwuid(getuid());
+  if (!pw) {
+    fprintf(stderr, "Failed to get username\n");
+    exit(1);
+  }
+
+  printf("Hello %s! This is the yuan programming language!\n", pw->pw_name);
+  printf("Feel free to type in commands\n");
+
+  StartRepl(stdin, stdout);
   return 0;
 }

@@ -24,7 +24,18 @@ char peekChar(Lexer *lexer) {
 // Don't forget free
 Lexer *NewLexer(char *input) {
   Lexer *lexer = (Lexer *)malloc(sizeof(Lexer));
-  lexer->input = input;
+  if (lexer == NULL) {
+    return NULL;
+  }
+  lexer->input = (char *)malloc(strlen(input) + 1);
+  if (lexer->input == NULL) {
+    free(lexer);
+    return NULL;
+  }
+  strcpy(lexer->input, input);
+  lexer->position = 0;
+  lexer->readPosition = 0;
+  lexer->ch = '\0';
   readChar(lexer);
   return lexer;
 }

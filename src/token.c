@@ -3,8 +3,8 @@
 
 
 TokenType keywords[] = {
+    {FUNCTION, "FN"},
     {LET, "LET"},
-    {FUNCTION, "FUNCTION"},
     {TRUE, "TRUE"},
     {FALSE, "FALSE"},
     {IF, "IF"},
@@ -21,15 +21,30 @@ TokenType lookupIdent(char *identifier) {
         return tokenType;
     }
 
-    int len = sizeof(keywords) / sizeof(TokenType);
-    for (int i = 0; i < len; i++) {
-        if (strcmp(keywords[i].value, identifier) == 0) {
-            tokenType.index = keywords[i].index;
-            tokenType.value = keywords[i].value;
-            return tokenType;
-        }
+    if (strcmp(identifier, "fn") == 0) {
+        tokenType.index = FUNCTION;
+        tokenType.value = "FUNCTION";
+    } else if (strcmp(identifier, "let") == 0) {
+        tokenType.index = LET;
+        tokenType.value = "LET";
+    } else if (strcmp(identifier, "true") == 0) {
+        tokenType.index = TRUE;
+        tokenType.value = "TRUE";
+    } else if (strcmp(identifier, "false") == 0) {
+        tokenType.index = FALSE;
+        tokenType.value = "FALSE";
+    } else if (strcmp(identifier, "if") == 0) {
+        tokenType.index = IF;
+        tokenType.value = "IF";
+    } else if (strcmp(identifier, "else") == 0) {
+        tokenType.index = ELSE;
+        tokenType.value = "ELSE";
+    } else if (strcmp(identifier, "return") == 0) {
+        tokenType.index = RETURN;
+        tokenType.value = "RETURN";
+    } else {
+        tokenType.index = IDENT;
+        tokenType.value = "IDENT";
     }
-    tokenType.index = IDENT;
-    tokenType.value = "IDENT";
     return tokenType;
 }
