@@ -2,16 +2,6 @@
 #include "token.h"
 
 
-TokenType keywords[] = {
-    {FUNCTION, "FN"},
-    {LET, "LET"},
-    {TRUE, "TRUE"},
-    {FALSE, "FALSE"},
-    {IF, "IF"},
-    {ELSE, "ELSE"},
-    {RETURN, "RETURN"},
-};
-
 TokenType lookupIdent(char *identifier) {
     TokenType tokenType;
 
