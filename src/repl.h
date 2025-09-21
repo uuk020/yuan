@@ -7,6 +7,6 @@
 #include "lexer.h"
 #define PROMPT ">> "
 
-void StartRepl(FILE *in, FILE *out);
+void start_repl(FILE *in, FILE *out);
 
 #endif

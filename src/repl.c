@@ -1,6 +1,6 @@
 #include "repl.h"
 
-void StartRepl(FILE *in, FILE *out) {
+void start_repl(FILE *in, FILE *out) {
     char buf[1024];
 
     while (1) {
@@ -13,17 +13,17 @@ void StartRepl(FILE *in, FILE *out) {
 
         buf[strcspn(buf, "\n")] = 0;
 
-        Lexer *lexer = NewLexer(buf);
+        Lexer *lexer = new_lexer(buf);
         if (lexer == NULL) {
             return;
         }
-        Token *tok = NextToken(lexer);
+        Token *tok = next_token(lexer);
 
         while (tok->type.index != ENDOF) {
             fprintf(out, "INDEX: %d, VALUE: %s, LITERAL: %s\n", tok->type.index, tok->type.value, tok->Literal);
             free(tok->Literal);
             free(tok);
-            tok = NextToken(lexer);
+            tok = next_token(lexer);
         }
         free(tok->Literal);
         free(tok);

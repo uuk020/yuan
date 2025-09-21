@@ -103,10 +103,10 @@ int test() {
     {"ENDOF", ""},
   };
 
-  Lexer *lexer = NewLexer(input);
+  Lexer *lexer = new_lexer(input);
   int len = sizeof(tokens) / sizeof(TestToken);
   for (int i = 0; i < len + 1; i++) {
-    Token *tok = NextToken(lexer);
+    Token *tok = next_token(lexer);
     printf("%s %s\n", tok->type.value, tok->Literal);
 
     free(tok->Literal);
@@ -129,6 +129,6 @@ int main() {
   printf("Hello %s! This is the yuan programming language!\n", pw->pw_name);
   printf("Feel free to type in commands\n");
 
-  StartRepl(stdin, stdout);
+  start_repl(stdin, stdout);
   return 0;
 }

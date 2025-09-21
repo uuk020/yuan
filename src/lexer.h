@@ -11,29 +11,28 @@ typedef struct {
   char ch;
 } Lexer;
 
-void readChar(Lexer *lexer);
+void read_char(Lexer *lexer);
 
-char peekChar(Lexer *lexer);
+char peek_char(Lexer *lexer);
 
-Lexer *NewLexer(char *input);
+Lexer *new_lexer(char *input);
 
-Token *newToken(TokenType type, char ch);
+Token *new_token(TokenType type, char ch);
 
-Token *newTokenStr(TokenType type, char *str);
+Token *new_token_str(TokenType type, char *str);
 
-Token *makeTwoCharToken(Lexer *lexer, TokenType type, char first);
+Token *make_two_char_token(Lexer *lexer, TokenType type, char first);
 
-void skipWhitespace(Lexer *lexer);
+void skip_white_space(Lexer *lexer);
 
-Token *NextToken(Lexer *lexer);
+Token *next_token(Lexer *lexer);
 
-int isIdentStart(char c);
+int is_ident_start(char c);
 
-int isIdentChar(char c);
+int is_ident_char(char c);
 
-char *readIdentifier(Lexer *lexer);
+char *read_identifier(Lexer *lexer);
 
-
-char *readNumber(Lexer *lexer);
+char *read_number(Lexer *lexer);
 
 #endif

@@ -2,7 +2,7 @@
 #include "token.h"
 
 
-TokenType lookupIdent(char *identifier) {
+TokenType look_up_ident(char *identifier) {
     TokenType tokenType;
 
     if (identifier == NULL) {

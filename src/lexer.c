@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include "lexer.h"
 
-void readChar(Lexer *lexer) {
+void read_char(Lexer *lexer) {
   if (lexer->input[lexer->readPosition] == '\0') {
     lexer->ch = '\0';
   } else {
@@ -13,7 +13,7 @@ void readChar(Lexer *lexer) {
   }
 }
 
-char peekChar(Lexer *lexer) {
+char peek_char(Lexer *lexer) {
   if (lexer->input[lexer->readPosition] == '\0') {
     return '\0';
   } else {
@@ -22,7 +22,7 @@ char peekChar(Lexer *lexer) {
 }
 
 // Don't forget free
-Lexer *NewLexer(char *input) {
+Lexer *new_lexer(char *input) {
   Lexer *lexer = (Lexer *)malloc(sizeof(Lexer));
   if (lexer == NULL) {
     fprintf(stderr, "Failed to allocate `lexer` memory\n");
@@ -38,12 +38,12 @@ Lexer *NewLexer(char *input) {
   lexer->position = 0;
   lexer->readPosition = 0;
   lexer->ch = '\0';
-  readChar(lexer);
+  read_char(lexer);
   return lexer;
 }
 
 // Don't forget free
-Token *newToken(TokenType type, char ch) {
+Token *new_token(TokenType type, char ch) {
   Token *tok = (Token *)malloc(sizeof(Token));
   if (tok == NULL) {
     return NULL; // out of memory
@@ -64,7 +64,7 @@ Token *newToken(TokenType type, char ch) {
 }
 
 // Don't forget free
-Token *newTokenStr(TokenType type, char *str) {
+Token *new_token_str(TokenType type, char *str) {
   Token *tok = (Token *)malloc(sizeof(Token));
   if (tok == NULL) {
     fprintf(stderr, "Failed to allocate `tok` memory\n");
@@ -75,7 +75,7 @@ Token *newTokenStr(TokenType type, char *str) {
   return tok;
 }
 
-Token* makeTwoCharToken(Lexer *lexer, TokenType type, char first) {
+Token* make_two_char_token(Lexer *lexer, TokenType type, char first) {
     char *literal = (char*)malloc(3);
     if (literal == NULL) {
       fprintf(stderr, "Failed to allocate `literal` memory\n");
@@ -84,24 +84,24 @@ Token* makeTwoCharToken(Lexer *lexer, TokenType type, char first) {
     literal[0] = first;
     literal[1] = lexer->ch;
     literal[2] = '\0';
-    return newTokenStr(type, literal);
+    return new_token_str(type, literal);
 }
 
-void skipWhitespace(Lexer *lexer) {
+void skip_white_space(Lexer *lexer) {
   while (isspace(lexer->ch)) {
-    readChar(lexer);
+    read_char(lexer);
   }
 }
 
-Token *NextToken(Lexer *lexer) {
+Token *next_token(Lexer *lexer) {
   Token* tok;
   TokenType type;
-  skipWhitespace(lexer);
+  skip_white_space(lexer);
   switch (lexer->ch) {
   case '=':
-    if (peekChar(lexer) == '=') {
+    if (peek_char(lexer) == '=') {
       char ch = lexer->ch;
-      readChar(lexer);
+      read_char(lexer);
       char *literal = (char *)malloc(3 * sizeof(char));
       if (literal == NULL) {
         fprintf(stderr, "Failed to allocate `literal` memory\n");
@@ -109,27 +109,27 @@ Token *NextToken(Lexer *lexer) {
       }
       type.index = EQ;
       type.value = "EQ";
-      tok = makeTwoCharToken(lexer, type, ch);
+      tok = make_two_char_token(lexer, type, ch);
     } else {
       type.index = ASSIGN;
       type.value = "ASSIGN";
-      tok = newToken(type, lexer->ch);
+      tok = new_token(type, lexer->ch);
     }
     break;
   case '+':
     type.index = PLUS;
     type.value = "PLUS";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '-':
     type.index = MINUS;
     type.value = "MINUS";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '!':
-    if (peekChar(lexer) == '=') {
+    if (peek_char(lexer) == '=') {
       char ch = lexer->ch;
-      readChar(lexer);
+      read_char(lexer);
       char *literal = (char *)malloc(3 * sizeof(char));
       if (literal == NULL) {
         fprintf(stderr, "Failed to allocate `literal` memory\n");
@@ -137,86 +137,86 @@ Token *NextToken(Lexer *lexer) {
       }
       type.index = NOT_EQ;
       type.value = "NOT_EQ";
-      tok = makeTwoCharToken(lexer, type, ch);
+      tok = make_two_char_token(lexer, type, ch);
     } else {
       type.index = BANG;
       type.value = "BANG";
-      tok = newToken(type, lexer->ch);
+      tok = new_token(type, lexer->ch);
     }
     break;
   case '*':
     type.index = ASTERISK;
     type.value = "ASTERISK";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '/':
     type.index = SLASH;
     type.value = "SLASH";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '<':
     type.index = LT;
     type.value = "LT";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '>':
     type.index = GT;
     type.value = "GT";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case ';':
     type.index = SEMICOLON;
     type.value = "SEMICOLON";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case ',':
     type.index = COMMA;
     type.value = "COMMA";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '(':
     type.index = LPAREN;
     type.value = "LPAREN";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case ')':
     type.index = RPAREN;
     type.value = "RPAREN";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '{':
     type.index = LBRACE;
     type.value = "LBRACE";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '}':
     type.index = RBRACE;
     type.value = "RBRACE";
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   case '\0':
     type.index = ENDOF;
     type.value = "eof"; 
-    tok = newToken(type, lexer->ch);
+    tok = new_token(type, lexer->ch);
     break;
   default:
-    if (isIdentStart(lexer->ch)) {
-      char *str = readIdentifier(lexer);
+    if (is_ident_start(lexer->ch)) {
+      char *str = read_identifier(lexer);
       if (str == NULL) {
         type.index = ILLEGAL;
         type.value = "ILLEGAL";
-        tok = newToken(type, lexer->ch);
+        tok = new_token(type, lexer->ch);
         return tok;
       }
-      type = lookupIdent(str);
-      tok = newTokenStr(type, str);
+      type = look_up_ident(str);
+      tok = new_token_str(type, str);
       return tok; 
     } else if (isdigit(lexer->ch)) {
-      char *str = readNumber(lexer);
+      char *str = read_number(lexer);
       if (str == NULL) {
         type.index = ILLEGAL;
         type.value = "ILLEGAL";
-        tok = newToken(type, lexer->ch);
+        tok = new_token(type, lexer->ch);
         return tok;
       }
       if (strchr(str, '.') != NULL) {
@@ -226,42 +226,45 @@ Token *NextToken(Lexer *lexer) {
         type.index = INT;
         type.value = "INT";
       }
-      tok = newTokenStr(type, str);
+      tok = new_token_str(type, str);
       return tok;
     } else {
       type.index = ILLEGAL;
       type.value = "ILLEGAL";
-      tok = newToken(type, lexer->ch);
+      tok = new_token(type, lexer->ch);
     }
     break;
   }
-  readChar(lexer);
+  read_char(lexer);
   return tok;
 }
 
-int isIdentStart(char c) {
+int is_ident_start(char c) {
   return isalpha(c) || c == '_';
 }
 
-int isIdentChar(char c) {
+int is_ident_char(char c) {
   return isalnum((unsigned char)c) || c == '_';
 }
 
 // Don't forget free
-char *readIdentifier(Lexer *lexer) {
-  if (!isIdentStart(lexer->ch)) {
+char *read_identifier(Lexer *lexer) {
+  if (!is_ident_start(lexer->ch)) {
     return NULL;
   }
 
   int position = lexer->position;
-  while (isIdentChar(lexer->ch)) {
-    readChar(lexer);
+  while (is_ident_char(lexer->ch)) {
+    read_char(lexer);
   }
 
   int length = lexer->position - position;
 
   char *str = (char *)malloc(length + 1);
-  if (!str) return NULL;
+  if (str == NULL) {
+    fprintf(stderr, "Failed to allocate `str` memory\n");
+    exit(1);
+  }
 
   memcpy(str, lexer->input + position, length);
   str[length] = '\0';
@@ -269,16 +272,16 @@ char *readIdentifier(Lexer *lexer) {
 }
 
 // Don't forget free
-char *readNumber(Lexer *lexer) {
+char *read_number(Lexer *lexer) {
   int position = lexer->position;
   while (isdigit(lexer->ch)) {
-    readChar(lexer);
+    read_char(lexer);
   }
 
   if (lexer->ch == '.') {
-    readChar(lexer);
+    read_char(lexer);
     while (isdigit(lexer->ch)) {
-      readChar(lexer);
+      read_char(lexer);
     }
   }
   

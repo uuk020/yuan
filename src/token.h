@@ -50,6 +50,6 @@ typedef struct {
   char *Literal;
 } Token;
 
-TokenType lookupIdent(char *ident);
+TokenType look_up_ident(char *ident);
 
 #endif
