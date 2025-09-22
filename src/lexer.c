@@ -1,7 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
 #include "lexer.h"
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 void read_char(Lexer *lexer) {
   if (lexer->input[lexer->readPosition] == '\0') {
@@ -75,16 +75,16 @@ Token *new_token_str(TokenType type, char *str) {
   return tok;
 }
 
-Token* make_two_char_token(Lexer *lexer, TokenType type, char first) {
-    char *literal = (char*)malloc(3);
-    if (literal == NULL) {
-      fprintf(stderr, "Failed to allocate `literal` memory\n");
-      exit(1);
-    }
-    literal[0] = first;
-    literal[1] = lexer->ch;
-    literal[2] = '\0';
-    return new_token_str(type, literal);
+Token *make_two_char_token(Lexer *lexer, TokenType type, char first) {
+  char *literal = (char *)malloc(3);
+  if (literal == NULL) {
+    fprintf(stderr, "Failed to allocate `literal` memory\n");
+    exit(1);
+  }
+  literal[0] = first;
+  literal[1] = lexer->ch;
+  literal[2] = '\0';
+  return new_token_str(type, literal);
 }
 
 void skip_white_space(Lexer *lexer) {
@@ -94,7 +94,7 @@ void skip_white_space(Lexer *lexer) {
 }
 
 Token *next_token(Lexer *lexer) {
-  Token* tok;
+  Token *tok;
   TokenType type;
   skip_white_space(lexer);
   switch (lexer->ch) {
@@ -196,7 +196,7 @@ Token *next_token(Lexer *lexer) {
     break;
   case '\0':
     type.index = ENDOF;
-    type.value = "eof"; 
+    type.value = "eof";
     tok = new_token(type, lexer->ch);
     break;
   default:
@@ -210,7 +210,7 @@ Token *next_token(Lexer *lexer) {
       }
       type = look_up_ident(str);
       tok = new_token_str(type, str);
-      return tok; 
+      return tok;
     } else if (isdigit(lexer->ch)) {
       char *str = read_number(lexer);
       if (str == NULL) {
@@ -239,13 +239,9 @@ Token *next_token(Lexer *lexer) {
   return tok;
 }
 
-int is_ident_start(char c) {
-  return isalpha(c) || c == '_';
-}
+int is_ident_start(char c) { return isalpha(c) || c == '_'; }
 
-int is_ident_char(char c) {
-  return isalnum((unsigned char)c) || c == '_';
-}
+int is_ident_char(char c) { return isalnum((unsigned char)c) || c == '_'; }
 
 // Don't forget free
 char *read_identifier(Lexer *lexer) {
@@ -284,7 +280,7 @@ char *read_number(Lexer *lexer) {
       read_char(lexer);
     }
   }
-  
+
   int len = lexer->position - position;
 
   char *num = (char *)malloc(len + 1);
@@ -296,5 +292,4 @@ char *read_number(Lexer *lexer) {
   strncpy(num, lexer->input + position, len);
   num[len] = '\0';
   return num;
-  
 }
