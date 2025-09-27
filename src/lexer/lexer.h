@@ -2,7 +2,7 @@
 #define LEXER_H
 
 #include <string.h>
-#include "token.h"
+#include "../token/token.h"
 
 typedef struct {
   char *input;

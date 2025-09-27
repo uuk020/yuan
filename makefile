@@ -7,9 +7,9 @@ else
 	CFLAGS = -O2 -std=c99 -Wall -Wextra
 endif
 
-TARGET = yuan
+TARGET = monkey
 
-SRCS = $(wildcard ./src/*.c)
+SRCS = $(shell find ./src -name "*.c")
 
 .PHONY: all clean
 

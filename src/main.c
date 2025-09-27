@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <unistd.h>
-#include "repl.h"
+#include "repl/repl.h"
 
 int test() {
   typedef struct {
@@ -126,7 +126,7 @@ int main() {
     exit(1);
   }
 
-  printf("Hello %s! This is the yuan programming language!\n", pw->pw_name);
+  printf("Hello %s! This is the monkey programming language!\n", pw->pw_name);
   printf("Feel free to type in commands\n");
 
   start_repl(stdin, stdout);
